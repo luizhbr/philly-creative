@@ -900,22 +900,22 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
                                 <label class="text-xs text-white/60 block mb-1.5">NOME COMPLETO</label>
-                                <input type="text" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none" placeholder="Seu nome" required>
+                                <input id="form-name" type="text" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none" placeholder="Seu nome" required>
                             </div>
                             <div>
                                 <label class="text-xs text-white/60 block mb-1.5">TELEFONE / WHATSAPP</label>
-                                <input type="tel" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none" placeholder="(614) 555-0192" required>
+                                <input id="form-phone" type="tel" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none" placeholder="(614) 555-0192" required>
                             </div>
                         </div>
                         
                         <div>
                             <label class="text-xs text-white/60 block mb-1.5">NOME DO SEU NEGÓCIO</label>
-                            <input type="text" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none" placeholder="Ex: Next Trim Carpentry" required>
+                            <input id="form-business" type="text" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none" placeholder="Ex: Next Trim Carpentry" required>
                         </div>
                         
                         <div>
                             <label class="text-xs text-white/60 block mb-1.5">O QUE VOCÊ PRECISA?</label>
-                            <select class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none">
+                            <select id="form-service" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-2xl px-5 h-12 text-sm outline-none">
                                 <option>Pacote Standard</option>
                                 <option>Pacote Solution</option>
                                 <option>Pacote Premium Mensal</option>
@@ -928,7 +928,7 @@
                         
                         <div>
                             <label class="text-xs text-white/60 block mb-1.5">MENSAGEM / DETALHES</label>
-                            <textarea rows="3" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-3xl px-5 py-4 text-sm outline-none resize-y min-h-[90px]" placeholder="Conte mais sobre seu negócio e objetivos..."></textarea>
+                            <textarea id="form-message" rows="3" class="w-full bg-zinc-950 border border-white/20 focus:border-white/60 transition-colors rounded-3xl px-5 py-4 text-sm outline-none resize-y min-h-[90px]" placeholder="Conte mais sobre seu negócio e objetivos..."></textarea>
                         </div>
                         
                         <button type="submit" 
@@ -1032,12 +1032,19 @@
             });
         }
         
-        // Contact form handler (demo)
+        // Contact form handler — envia direto para WhatsApp
         function initContactForm() {
             const form = document.getElementById('contact-form');
+            const WHATSAPP_NUMBER = '12678265740'; // +1 (267) 826-5740
             
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                const name = document.getElementById('form-name').value.trim();
+                const phone = document.getElementById('form-phone').value.trim();
+                const business = document.getElementById('form-business').value.trim();
+                const service = document.getElementById('form-service').value;
+                const message = document.getElementById('form-message').value.trim();
                 
                 const btn = form.querySelector('button[type="submit"]');
                 const originalText = btn.innerHTML;
@@ -1045,9 +1052,25 @@
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> ENVIANDO...';
                 btn.disabled = true;
                 
+                // Monta a mensagem do WhatsApp
+                let waMessage = '*NOVO CONTATO — Philly Creative*\n\n';
+                waMessage += '*Nome:* ' + name + '\n';
+                waMessage += '*Telefone/WhatsApp:* ' + phone + '\n';
+                waMessage += '*Negócio:* ' + business + '\n';
+                waMessage += '*Serviço de interesse:* ' + service + '\n';
+                if (message) {
+                    waMessage += '*Mensagem:* ' + message + '\n';
+                }
+                waMessage += '\n_Enviado pelo site philly-creative-r4l7.vercel.app_';
+                
+                const waUrl = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(waMessage);
+                
                 setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> MENSAGEM ENVIADA! Entraremos em contato em breve.';
+                    btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> ABRIENDO WHATSAPP...';
                     btn.classList.add('bg-emerald-500', 'hover:bg-emerald-500');
+                    
+                    // Abre WhatsApp em nova aba
+                    window.open(waUrl, '_blank');
                     
                     setTimeout(() => {
                         form.reset();
@@ -1057,8 +1080,8 @@
                         
                         // Show success toast
                         showToast();
-                    }, 2200);
-                }, 1400);
+                    }, 1800);
+                }, 800);
             });
         }
         
